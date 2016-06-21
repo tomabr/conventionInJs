@@ -15,4 +15,6 @@ ___
 
 We can also write code in a chainable way, which give possibility to create a chainable of invoking function on the object.
 
+[OOP](index2.html)
+
 
