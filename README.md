@@ -1,4 +1,5 @@
-# conventionInJs
+# Convention Programming in Java Script 
+
 JavaScript gives possbility to write the same code in a various concepts.
 
 First it is important to remember it is a prototype language, which is object-oriented language, not class-oriented language.
