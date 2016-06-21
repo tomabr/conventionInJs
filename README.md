@@ -18,10 +18,10 @@ We can also write code in a chainable way, which give possibility to create a ch
 
 ## Examples
 
-[OOP](index2.html)
-[chainable OOP] (index3.html)
+1. [OOP](index2.html)
+2. [chainable OOP] (index3.html)
 
-[OLOO](index4.html)
-[chianable OLOO](index5.html)
+3. [OLOO](index4.html)
+4. [chianable OLOO](index5.html)
 
 
