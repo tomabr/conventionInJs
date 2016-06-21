@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+  <meta charset="utf-8">
+  <title>Places Searchbox</title>
+
+  <style>
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+  }
+
+  #detect {
+    z-index: 1;
+    height: 40px;
+  }
+
+  #map {
+    height: 100%;
+    width: 100%;
+  }
+
+  #pac-input {
+    width: 300px;
+    height: 40px;
+    padding: 5px;
+    box-sizing: border-box;
+  }
+  </style>
+   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBm4U_1BDdHrkl2AspIX1q_5ZxZBGLs5bI&libraries=places"></script>
+
+
+</head>
+
+<body>
+
+  <input id="pac-input" class="controls" type="text" placeholder="Search for places">
+  <button id="detect">Geopostion</button>
+  <div id="map"></div>
+
+</body>
+  <script>
+  (function() {
+
+    function locationModule(param) {
+
+      if (!param.map) {
+        return;
+      }
+
+      var mapEl = param.map;
+      var latitude = param.latitude || 0;
+      var longitude = param.longitude || 0;
+      var zoom = param.zoom || 10;
+      var input = param.input;
+      var button = param.button || null;
+      var marginTopControlers = param.marginTopControlers || 0;
+
+
+
+      function GeoLocalisation() {
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.myTypeId = google.maps.MapTypeId.TERRAIN;
+        this.zoom = zoom;
+        this.markers = [];
+        this.bounds = null;
+      }
+
+      GeoLocalisation.prototype.getMap = function(elm) {
+        this.map = new google.maps.Map(elm, {
+          center: {
+            lat: this.latitude,
+            lng: this.longitude
+          },
+          zoom: this.zoom,
+          myTypeId: this.myTypeId,
+          fullscreenControl: true
+        });
+
+        return this;
+      };
+
+      GeoLocalisation.prototype.getControls = function() {
+        Array.prototype.forEach.call(arguments,function(el){
+          if(!!el) el.style.marginTop = marginTopControlers;
+        });
+
+        this.map.controls[google.maps.ControlPosition.TOP_CENTER].push(arguments[0]);
+        this.searchBox = new google.maps.places.SearchBox(arguments[0]);
+        this.detect = arguments[1];
+        this.map.controls[google.maps.ControlPosition.TOP_CENTER].push(arguments[1]);
+
+        return this;
+      };
+
+      GeoLocalisation.prototype.cleanMarkers = function(){
+      this.markers.forEach(function(marker) {
+        marker.setMap(null);
+      });
+      this.markers = [];
+    };
+
+      GeoLocalisation.prototype.setMarker = function(){
+        this.markers.push(new google.maps.Marker(arguments[0]));
+      };
+
+      GeoLocalisation.prototype.searchBoxChange = function() {
+        this.searchBox.addListener('places_changed', function() {
+          var places = this.searchBox.getPlaces();
+
+          if (places.length === 0) {
+            return;
+          }
+
+          this.cleanMarkers();
+          this.bounds = new google.maps.LatLngBounds();
+          places.forEach(function(place) {
+
+            this.cleanMarkers();
+            var markerParams = {
+              map: this.map,
+              animation: google.maps.Animation.DROP,
+              title: place.name,
+              position: place.geometry.location
+            };
+
+            this.setMarker(markerParams);
+
+            if (place.geometry.viewport) {
+              this.bounds.union(place.geometry.viewport);
+            } else {
+              this.bounds.extend(place.geometry.location);
+            }
+
+            this.map.fitBounds(this.bounds);
+            this.map.getCenter();
+            var zoom = this.map.getZoom();
+            this.map.setZoom(zoom > 15 ? 15 : zoom);
+
+          }.bind(this));
+        }.bind(this));
+
+        return this;
+      };
+
+      GeoLocalisation.prototype.takeCurrentLocalisation = function() {
+      if(!navigator.geolocation) {
+          alert("Geolocation is not supported by your browser");
+          return;
+      }
+
+      this.detect.addEventListener('click', function() {
+        navigator.geolocation.getCurrentPosition(success.bind(this), error);
+      }.bind(this));
+
+      function success(position){
+        this.latitude = position.coords.latitude;
+        this.longitude = position.coords.longitude;
+        this.map.setCenter(new google.maps.LatLng(this.latitude, this.longitude));
+        var zoom = this.map.getZoom();
+        this.map.setZoom(zoom < 15 ? 15 : zoom);
+
+        this.cleanMarkers();
+        var markerParams = {
+            map: this.map,
+            animation: google.maps.Animation.DROP,
+            title: 'You are here!',
+            position: {
+              lat: this.latitude,
+              lng: this.longitude
+            }
+        };
+
+        this.setMarker(markerParams);
+      }
+
+
+      function error(){
+        alert('Error. Plesase referesh');
+      }
+
+        return this;
+      };
+
+
+      return new GeoLocalisation().getMap(mapEl).getControls(input, button).searchBoxChange().takeCurrentLocalisation();
+
+    }
+
+
+    var mySearch = locationModule({
+      map: document.getElementById('map'),
+      latitude: 50,
+      longitude: 20,
+      input: document.getElementById('pac-input'),
+      button: document.getElementById('detect'),
+      marginTopControlers: '10px'
+    });
+
+
+
+  })();
+    </script>
+
+</html>
