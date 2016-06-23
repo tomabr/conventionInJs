@@ -10,8 +10,9 @@ Two main concept of writing code created two different style of writing code.
 * **OLOO (object linked to other objects)**
 
 ___
-OOP is based on invoking function as constructor (with new operand). It is classic and prototype style of object oriented programming.
+OOP is based on invoking function as constructor (with new operand). It is classic and prototype style of object oriented programming. With the new ES2015 we also uses new syntax based on class, but it is only a trick. The complilator uses still prototypes.
 OLOO is modern style, based on delegation (the link between objects)
+
 ___
 
 We can also write code in a chainable way, which give possibility to create a chainable of invoking function on the object.
@@ -23,5 +24,7 @@ We can also write code in a chainable way, which give possibility to create a ch
 
 3. [OLOO](index4.html)
 4. [chianable OLOO](index5.html)
+
+6. [ES2015](index6.html)
 
 
